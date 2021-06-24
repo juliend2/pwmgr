@@ -1,0 +1,44 @@
+:root {
+    --radius: 3px;
+}
+
+body {
+    font-family: sans-serif;
+    background-color: rgb(245, 245, 245);
+    height: calc(100vh - 45px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 20px;
+}
+
+form.login {
+    background-color: white;
+    width: 50%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 25px;
+    border-radius: var(--radius);
+    box-shadow: 0px 0px 22px -6px rgba(0,0,0,0.31);
+    box-sizing: border-box;
+}
+form.login h1 {
+    text-align: center;
+}
+form.login p {
+    text-align: center;
+}
+input[type='password'] {
+    width: 70%;
+    padding: 1rem;
+    font-size: 1.5em;
+}
+input[type='submit'] {
+    font-size: 1.5em;
+    padding: 1rem 2.5rem;
+}
+@media (max-width: 768px) {
+    form.login {
+        width: 100%;
+    }
+}
