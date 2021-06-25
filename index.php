@@ -1,9 +1,12 @@
 <?php
+include 'constants.php';
 
-// 1. check whether the data folder exists.
-//  otherwise, create it.
+// 1. check whether the data folder exists, otherwise, create it:
+if ( ! file_exists( DATA_PATH ) ) {
+    mkdir( DATA_PATH, 0755 );
+}
 
-// 2. display the web interface.
+// 2. display the web interface:
 
 ?>
 <!DOCTYPE html>
@@ -24,14 +27,10 @@
         <meta name="theme-color" content="#ffffff">
     </head>
     <body>
-        <form class="login">
-            <h1>What's the secret code, <nobr>Mr. Bond</nobr>?</h1>
-            <p>
-                <input type="password" name="master_password" placeholder="">
-            </p>
-            <p>
-                <input type="submit" value="Enter">
-            </p>
-        </form>
+        <!-- <script src="lib/cryptojs-core.min.js"></script> -->
+        <script src="lib/crypto.aes.js"></script>
+
+        <!-- <script src="lib/cryptojs-aes.min.js"></script> -->
+        <script src="main.js"></script>
     </body>
 </html>
