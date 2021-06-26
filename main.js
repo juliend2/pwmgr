@@ -16,6 +16,19 @@ function renderEditFile(fileName, fileContent) {
     `
 }
 
+function renderShowFile(fileName, fileContent) {
+    return `
+    <div class="show-file" data-filename="${fileName}">
+        <div>
+            ${markdownParser(fileContent)}
+        </div>
+        <p>
+            <button onclick="return onClickEdit('${fileName}')">Edit</button>
+        </p>
+    </div>
+`
+}
+
 function renderLoginForm() {
     return `
         <form class="login" method="post" action=".">
@@ -54,6 +67,18 @@ function container(innerHtml) {
 
 // DOM helper functions
 // --------------------------------------------------------
+
+function markdownParser(text) {
+	const toHTML = text
+		.replace(/^### (.*$)/gim, '<h3>$1</h3>') // h3 tag
+		.replace(/^## (.*$)/gim, '<h2>$1</h2>') // h2 tag
+		.replace(/^# (.*$)/gim, '<h1>$1</h1>') // h1 tag
+		.replace(/\*\*(.*)\*\*/gim, '<b>$1</b>') // bold text
+		.replace(/\*(.*)\*/gim, '<i>$1</i>') // italic text
+        .replace(/\<pw\>(.*)\<\/pw\>/gim, `<input type="text" value="$1">`)
+        .replace(/\n\n/gm, '<br>'); // newline
+	return toHTML.trim(); // using trim method to remove whitespace
+}
 
 // currentNode - Node
 // newNodeHTML - String
@@ -96,40 +121,68 @@ function onClickEditFilename(element) {
 
             const decrypted = decrypt(data, window.secretPassphrase);
             console.log('decrypted:', decrypted)
-            changeContentFor(renderEditFile(element.dataset.filename, decrypted))
+            changeContentFor(renderShowFile(element.dataset.filename, decrypted))
         })
     return false
 }
 
 function onSubmitEditForm(formElement) {
     const textarea = formElement.querySelector('textarea')
-    console.log('on submit', textarea, 'value', textarea.value, 'innerHTML', textarea.innerHTML)
     const fileName = formElement.dataset.filename
-    console.log('gonna encrypt:', textarea.value, 'with:', window.secretPassphrase)
     const encrypted = encrypt(textarea.value, window.secretPassphrase)
-    console.log('encrypted result is:', encrypted)
     updateContentFor(fileName, encrypted)
+        .then(newData => {
+            console.log('new data ', newData)
+            
+            showFile(fileName)
+        })
     return false
 }
 
+function showFile(fileName) {
+    getFileContent(fileName)
+        .then((data) => {
+            console.log('data', data)
+            console.log('gonna decrypt:', data, 'with:', window.secretPassphrase)
+
+            const decrypted = decrypt(data, window.secretPassphrase);
+            console.log('decrypted:', decrypted)
+            changeContentFor(renderShowFile(fileName, decrypted))
+        })
+}
+
+function onClickEdit(fileName) {
+    getFileContent(fileName)
+        .then((data) => {
+            console.log('data', data)
+            console.log('gonna decrypt:', data, 'with:', window.secretPassphrase)
+
+            const decrypted = decrypt(data, window.secretPassphrase);
+            console.log('decrypted:', decrypted)
+            changeContentFor(renderEditFile(fileName, decrypted))
+        })
+}
 
 function updateContentFor(filename, encryptedData) {
-    fetch('/ajax.php?action=update', {
-        method: "post",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        //make sure to serialize your JSON body
-        body: JSON.stringify({
-          filename: filename,
-          encrypteddata: encryptedData
-        })
-      })
-    //   .then( (response) => { 
-    //      //do something awesome that makes the world a better place
-    //      console.log('response', response.json() )
-    //   });
+    return new Promise(resolve => {
+        fetch('/ajax.php?action=update', {
+            method: "post",
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            //make sure to serialize your JSON body
+            body: JSON.stringify({
+              filename: filename,
+              encrypteddata: encryptedData
+            })
+          }).then(response => {
+            return response.json()
+          }).then(data => {
+              console.log('data', data)
+              resolve(data)
+          })
+    })
 }
 
 // Returns a Promise, with the data as an argument
