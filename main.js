@@ -68,15 +68,34 @@ function container(innerHtml) {
 // DOM helper functions
 // --------------------------------------------------------
 
-function markdownParser(text) {
-	const toHTML = text
-		.replace(/^### (.*$)/gim, '<h3>$1</h3>') // h3 tag
-		.replace(/^## (.*$)/gim, '<h2>$1</h2>') // h2 tag
-		.replace(/^# (.*$)/gim, '<h1>$1</h1>') // h1 tag
-		.replace(/\*\*(.*)\*\*/gim, '<b>$1</b>') // bold text
-		.replace(/\*(.*)\*/gim, '<i>$1</i>') // italic text
-        .replace(/\<pw\>(.*)\<\/pw\>/gim, `<input type="text" value="$1">`)
+function replaceMarkdownParts(markdown) {
+    return markdown
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>') // h3 tag
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>') // h2 tag
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>') // h1 tag
+        .replace(/\*\*(.*)\*\*/gim, '<b>$1</b>') // bold text
+        .replace(/\*(.*)\*/gim, '<i>$1</i>') // italic text
         .replace(/\n\n/gm, '<br>'); // newline
+} 
+
+function markdownParser(text) {
+    var parts = []
+    text.split(/\<pw\>/).forEach(split => {
+        const pwSplits = split.split(/\<\/pw\>/)
+        if (pwSplits.length > 1) {
+            console.log('pwSplits', pwSplits)
+            parts.push('<pw>')
+            parts.push(pwSplits[0])
+            parts.push('</pw>')
+            parts.push(replaceMarkdownParts( pwSplits[1] ))
+
+        } else {
+            parts.push(replaceMarkdownParts( split ))
+        }
+    })
+    const toHTML = parts.join('').replace(/\<pw\>(.*)\<\/pw\>/gim, `<input type="text" value="$1">`)
+    console.log('parts', parts, 'toHTML', toHTML)
+
 	return toHTML.trim(); // using trim method to remove whitespace
 }
 
