@@ -1,5 +1,9 @@
 require 'rack'
 require 'json'
+require "highline/import"
+
+pass = ask("Enter your password:  ") { |q| q.echo = "x" }
+
 
 INDEX_HTML = %{
     <!DOCTYPE html>
@@ -7,6 +11,9 @@ INDEX_HTML = %{
         <head>
             <title>PW Manager</title>
             <link rel="stylesheet" href="styles.css">
+            <script>
+            window.secretPassphrase = "#{pass}";
+            </script>
             
             <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,7 +60,7 @@ class App
             filecontent = posted['encrypteddata']
             # Write to file:
             filepath = "./data/#{sanitize_filename filename}.dat"
-            
+
             File.write(filepath, filecontent)
             [200, {"Content-Type" => "application/json"}, [JSON.generate({file_path: filepath})]]
         else

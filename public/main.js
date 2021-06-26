@@ -116,12 +116,7 @@ function changeContentFor(html) {
 // --------------------------------------------------------
 
 function decrypt(encryptedBlob, password) {
-    // try {
-        return CryptoJS.AES.decrypt(encryptedBlob, password).toString(CryptoJS.enc.Utf8);
-    // } catch (e) {
-        // return '';
-    // }
-    
+    return CryptoJS.AES.decrypt(encryptedBlob, password).toString(CryptoJS.enc.Utf8);
 }
 
 function encrypt(plaintext, password) {
