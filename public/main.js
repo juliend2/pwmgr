@@ -1,4 +1,3 @@
-window.secretPassphrase = 'twtwt'
 
 // View rendering functions
 // --------------------------------------------------------
