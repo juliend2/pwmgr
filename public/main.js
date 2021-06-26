@@ -184,7 +184,7 @@ function onClickEdit(fileName) {
 
 function updateContentFor(filename, encryptedData) {
     return new Promise(resolve => {
-        fetch('/ajax.php?action=update', {
+        fetch('/update', {
             method: "post",
             headers: {
               'Accept': 'application/json',
@@ -207,7 +207,7 @@ function updateContentFor(filename, encryptedData) {
 // Returns a Promise, with the data as an argument
 function getFileContent(filename) {
     return new Promise(resolve => {
-        fetch(`/ajax.php?action=get&filename=${filename}`)
+        fetch(`/show/${filename}`)
         .then(response => response.json())
         .then(data => {
             console.log('data received', data, decrypt(data.file_content, window.secretPassphrase))
@@ -219,7 +219,7 @@ function getFileContent(filename) {
 
 // Initialize the app
 // --------------------------------------------------------
-fetch('/ajax.php?action=list')
+fetch('/list')
     .then((response) => {
         return response.json()
     })
