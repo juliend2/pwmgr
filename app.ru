@@ -69,6 +69,10 @@ class App
             else
                 [200, {'Content-Type' => 'text/html'}, [html_for({action: 'show', param: file_name})]]
             end
+        when /edit\/(.*)/
+            file_name = sanitize_filename $1
+            file_content = File.open("./data/#{file_name}.dat").read
+            [200, {'Content-Type' => 'text/html'}, [html_for({action: 'edit', param: file_name})]]
         when /update/
             posted = JSON.parse env['rack.input'].read
             filename = posted['filename']
