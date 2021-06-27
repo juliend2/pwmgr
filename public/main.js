@@ -9,7 +9,7 @@ function renderEditFile(fileName, fileContent) {
                 <textarea name="filecontent">${fileContent}</textarea>
             </p>
             <p>
-                <button>Save</button>
+                <button>Save</button> or <a href="#" onclick="return onClickCancel()">Cancel</a>
             </p>
         </form>
     `
@@ -22,7 +22,7 @@ function renderShowFile(fileName, fileContent) {
             ${markdownParser(fileContent)}
         </div>
         <p>
-            <button onclick="return onClickEdit('${fileName}')">Edit</button> or <a href="#" onclick="return onClickCancel()">Cancel</a>
+            <button onclick="return showEdit('${fileName}')">Edit</button> or <a href="#" onclick="return onClickCancel()">Cancel</a>
         </p>
     </div>
 `
@@ -124,11 +124,7 @@ function encrypt(plaintext, password) {
 // --------------------------------------------------------
 
 function onClickEditFilename(element) {
-    getFileContent(element.dataset.filename)
-        .then((data) => {
-            const decrypted = decrypt(data, window.secretPassphrase);
-            changeContentFor(renderShowFile(element.dataset.filename, decrypted))
-        })
+    showFile(element.dataset.filename)
     return false
 }
 
@@ -144,7 +140,6 @@ function onSubmitEditForm(formElement) {
 }
 
 function showFile(fileName) {
-    console.log('show file')
     history.pushState({action: 'show', param: fileName}, `'${fileName}' passwords | PWMGR`, `/show/${fileName}`)
     getFileContent(fileName)
         .then((data) => {
@@ -153,7 +148,30 @@ function showFile(fileName) {
         })
 }
 
-function onClickEdit(fileName) {
+
+function showIndex() {
+    history.pushState({action: 'index', param: ''}, `PWMGR`, `/`)
+    
+    fetch('/list')
+       .then((response) => {
+            return response.json()
+        })
+        .then(data => {
+            const files = data.map((d)=> {
+                // Get last element of path:
+                const separated = d.split('/')
+                const fileName = separated[separated.length - 1]
+                // remove extension:
+                const fileNameParts = fileName.split('.')
+                return fileNameParts[0]
+            })
+            changeContentFor(renderList(files))
+        })
+}
+
+
+function showEdit(fileName) {
+    history.pushState({action: 'edit', param: fileName}, `Edit '${fileName}' passwords | PWMGR`, `/edit/${fileName}`)
     getFileContent(fileName)
         .then((data) => {
             const decrypted = decrypt(data, window.secretPassphrase);
@@ -202,38 +220,25 @@ function getFileContent(filename) {
     })
 }
 
+
+
+// Initialize the app
+// --------------------------------------------------------
+
 window.addEventListener('popstate', (event) => {
     console.log("location: " + document.location + ", state: " + JSON.stringify(event.state));
     routeTo(event.state)
 });
 
-// Initialize the app
-// --------------------------------------------------------
-
-function showIndex() {
-    fetch('/list')
-    .then((response) => {
-        return response.json()
-    })
-    .then(data => {
-        const files = data.map((d)=> {
-            // Get last element of path:
-            const separated = d.split('/')
-            const fileName = separated[separated.length - 1]
-            // remove extension:
-            const fileNameParts = fileName.split('.')
-            return fileNameParts[0]
-        })
-        changeContentFor(renderList(files))
-    })
-}
-
-
-
 function routeTo(stateObject) {
+    console.log('routeTo', stateObject)
     if (stateObject.action == 'show') {
         showFile(stateObject.param)
     } else if (stateObject.action == 'index') {
+        console.log('else if')
         showIndex()
+    } else if (stateObject.action == 'edit') {
+        console.log('edit')
+        showEdit(stateObject.param)
     }
 }
