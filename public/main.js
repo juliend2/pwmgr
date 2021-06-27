@@ -22,7 +22,7 @@ function renderShowFile(fileName, fileContent) {
             ${markdownParser(fileContent)}
         </div>
         <p>
-            <button onclick="return onClickEdit('${fileName}')">Edit</button>
+            <button onclick="return onClickEdit('${fileName}')">Edit</button> or <a href="#" onclick="return onClickCancel()">Cancel</a>
         </p>
     </div>
 `
@@ -82,7 +82,6 @@ function markdownParser(text) {
     text.split(/\<pw\>/).forEach(split => {
         const pwSplits = split.split(/\<\/pw\>/)
         if (pwSplits.length > 1) {
-            console.log('pwSplits', pwSplits)
             parts.push('<pw>')
             parts.push(pwSplits[0])
             parts.push('</pw>')
@@ -93,7 +92,6 @@ function markdownParser(text) {
         }
     })
     const toHTML = parts.join('').replace(/\<pw\>(.*)\<\/pw\>/gim, `<input type="text" value="$1">`)
-    console.log('parts', parts, 'toHTML', toHTML)
 
 	return toHTML.trim(); // using trim method to remove whitespace
 }
@@ -126,14 +124,9 @@ function encrypt(plaintext, password) {
 // --------------------------------------------------------
 
 function onClickEditFilename(element) {
-    console.log('onClick', element, element.dataset.filename)
     getFileContent(element.dataset.filename)
         .then((data) => {
-            console.log('data', data)
-            console.log('gonna decrypt:', data, 'with:', window.secretPassphrase)
-
             const decrypted = decrypt(data, window.secretPassphrase);
-            console.log('decrypted:', decrypted)
             changeContentFor(renderShowFile(element.dataset.filename, decrypted))
         })
     return false
@@ -145,21 +138,17 @@ function onSubmitEditForm(formElement) {
     const encrypted = encrypt(textarea.value, window.secretPassphrase)
     updateContentFor(fileName, encrypted)
         .then(newData => {
-            console.log('new data ', newData)
-            
             showFile(fileName)
         })
     return false
 }
 
 function showFile(fileName) {
+    console.log('show file')
+    history.pushState({action: 'show', param: fileName}, `'${fileName}' passwords | PWMGR`, `/show/${fileName}`)
     getFileContent(fileName)
         .then((data) => {
-            console.log('data', data)
-            console.log('gonna decrypt:', data, 'with:', window.secretPassphrase)
-
             const decrypted = decrypt(data, window.secretPassphrase);
-            console.log('decrypted:', decrypted)
             changeContentFor(renderShowFile(fileName, decrypted))
         })
 }
@@ -167,13 +156,14 @@ function showFile(fileName) {
 function onClickEdit(fileName) {
     getFileContent(fileName)
         .then((data) => {
-            console.log('data', data)
-            console.log('gonna decrypt:', data, 'with:', window.secretPassphrase)
-
             const decrypted = decrypt(data, window.secretPassphrase);
-            console.log('decrypted:', decrypted)
             changeContentFor(renderEditFile(fileName, decrypted))
         })
+}
+
+function onClickCancel() {
+    showIndex()
+    return false;
 }
 
 function updateContentFor(filename, encryptedData) {
@@ -192,7 +182,6 @@ function updateContentFor(filename, encryptedData) {
           }).then(response => {
             return response.json()
           }).then(data => {
-              console.log('data', data)
               resolve(data)
           })
     })
@@ -201,19 +190,28 @@ function updateContentFor(filename, encryptedData) {
 // Returns a Promise, with the data as an argument
 function getFileContent(filename) {
     return new Promise(resolve => {
-        fetch(`/show/${filename}`)
+        fetch(`/show/${filename}`, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
         .then(response => response.json())
         .then(data => {
-            console.log('data received', data, decrypt(data.file_content, window.secretPassphrase))
             resolve(data.file_content)
         })
     })
 }
 
+window.addEventListener('popstate', (event) => {
+    console.log("location: " + document.location + ", state: " + JSON.stringify(event.state));
+    routeTo(event.state)
+});
 
 // Initialize the app
 // --------------------------------------------------------
-fetch('/list')
+
+function showIndex() {
+    fetch('/list')
     .then((response) => {
         return response.json()
     })
@@ -226,6 +224,16 @@ fetch('/list')
             const fileNameParts = fileName.split('.')
             return fileNameParts[0]
         })
-        console.log('files', files)
-        document.querySelector('body').insertAdjacentHTML('beforeend', container(renderList(files)))
+        changeContentFor(renderList(files))
     })
+}
+
+
+
+function routeTo(stateObject) {
+    if (stateObject.action == 'show') {
+        showFile(stateObject.param)
+    } else if (stateObject.action == 'index') {
+        showIndex()
+    }
+}
