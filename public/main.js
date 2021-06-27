@@ -33,7 +33,7 @@ function renderLoginForm() {
         <form class="login" method="post" action="." onsubmit="return onSubmitLogin(this)">
             <h1>What's the secret code, <nobr>Mr. Bond</nobr>?</h1>
             <p>
-                <input type="password" name="master_password" placeholder="">
+                <input type="password" data-lpignore="true" name="master_password" placeholder="">
             </p>
             <p>
                 <input type="submit" value="Enter">
