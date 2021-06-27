@@ -30,7 +30,7 @@ function renderShowFile(fileName, fileContent) {
 
 function renderLoginForm() {
     return `
-        <form class="login" method="post" action=".">
+        <form class="login" method="post" action="." onsubmit="return onSubmitLogin(this)">
             <h1>What's the secret code, <nobr>Mr. Bond</nobr>?</h1>
             <p>
                 <input type="password" name="master_password" placeholder="">
@@ -139,6 +139,35 @@ function onSubmitEditForm(formElement) {
     return false
 }
 
+function onSubmitLogin(formElement) {
+    const passField = formElement.querySelector('input[type="password"]')
+    const password = passField.value
+
+    fetch('/login', {
+        method: "post",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        // Make sure to serialize your JSON body
+        body: JSON.stringify({
+            password: password
+        })
+        }).then(response => {
+            return response.json()
+        }).then(data => {
+            console.log(data)
+            if (data.status == 'success') {
+                window.secretPassphrase = password
+                showIndex()
+            } else {
+                alert("Wrong password. Try again.")
+            }
+        })
+
+    return false
+}
+
 function showFile(fileName) {
     history.pushState({action: 'show', param: fileName}, `'${fileName}' passwords | PWMGR`, `/show/${fileName}`)
     getFileContent(fileName)
@@ -152,7 +181,11 @@ function showFile(fileName) {
 function showIndex() {
     history.pushState({action: 'index', param: ''}, `PWMGR`, `/`)
     
-    fetch('/list')
+    fetch('/list', {
+        headers: {
+            'Authorization': `Bearer ${window.secretPassphrase}`
+        }
+    })
        .then((response) => {
             return response.json()
         })
@@ -179,6 +212,10 @@ function showEdit(fileName) {
         })
 }
 
+function showLogin() {
+    changeContentFor(renderLoginForm())
+}
+
 function onClickCancel() {
     showIndex()
     return false;
@@ -190,7 +227,8 @@ function updateContentFor(filename, encryptedData) {
             method: "post",
             headers: {
               'Accept': 'application/json',
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${window.secretPassphrase}`
             },
             //make sure to serialize your JSON body
             body: JSON.stringify({
@@ -210,7 +248,8 @@ function getFileContent(filename) {
     return new Promise(resolve => {
         fetch(`/show/${filename}`, {
             headers: {
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${window.secretPassphrase}`
             }
         })
         .then(response => response.json())
@@ -235,10 +274,10 @@ function routeTo(stateObject) {
     if (stateObject.action == 'show') {
         showFile(stateObject.param)
     } else if (stateObject.action == 'index') {
-        console.log('else if')
         showIndex()
     } else if (stateObject.action == 'edit') {
-        console.log('edit')
         showEdit(stateObject.param)
+    } else if (stateObject.action == 'login') {
+        showLogin()
     }
 }
