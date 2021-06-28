@@ -5,6 +5,7 @@
 function renderEditFile(fileName, fileContent) {
     return `
         <form class="edit-file" data-filename="${fileName}" onsubmit="return onSubmitEditForm(this)">
+            <h1 class="note-title">${fileName}</h1>
             <p>
                 <textarea name="filecontent">${fileContent}</textarea>
             </p>
@@ -18,7 +19,8 @@ function renderEditFile(fileName, fileContent) {
 function renderShowFile(fileName, fileContent) {
     return `
     <div class="show-file" data-filename="${fileName}">
-        <div>
+        <h1 class="note-title">${fileName}</h1>
+        <div class="border-top padding-top">
             ${markdownParser(fileContent)}
         </div>
         <p>
@@ -52,6 +54,7 @@ function fileItem(filename) {
 function renderList(files) {
     return `
         <div class="list-of-files">
+            <button onclick="return showNew()">New note</button>
             <ul>
                 ${files.map(f => fileItem(f)).join('')}
             </ul>
@@ -216,6 +219,33 @@ function showLogin() {
     changeContentFor(renderLoginForm())
 }
 
+function showNew() {
+    changeContentFor('')
+    const name = prompt("Name of your note (no space or special characters):")
+    fetch('/new', {
+        method: "post",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${window.secretPassphrase}`
+        },
+        //make sure to serialize your JSON body
+        body: JSON.stringify({
+          filename: name
+        })
+    }).then(response => {
+        return response.json()
+    }).then(data => {
+        if (data.status == 'success') {
+            showEdit(name)
+        } else {
+            alert(`Failed to create the note '${name}'.`)
+        }
+    })
+    
+    return false
+}
+
 function onClickCancel() {
     showIndex()
     return false;
@@ -275,6 +305,8 @@ function routeTo(stateObject) {
         showFile(stateObject.param)
     } else if (stateObject.action == 'index') {
         showIndex()
+    } else if (stateObject.action == 'index') {
+        showNew()
     } else if (stateObject.action == 'edit') {
         showEdit(stateObject.param)
     } else if (stateObject.action == 'login') {

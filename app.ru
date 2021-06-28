@@ -85,6 +85,22 @@ class App
             file_content = File.open("./data/#{file_name}.dat").read
             [200, {'Content-Type' => 'text/html'}, [html_for({action: 'edit', param: file_name})]]
 
+        when /new/
+            return login! if insecure?
+
+            if env['HTTP_ACCEPT'] && env['HTTP_ACCEPT'] == 'application/json'
+                posted = JSON.parse env['rack.input'].read
+                filename = posted['filename']
+                filepath = "./data/#{sanitize_filename filename}.dat"
+                if File.write(filepath, '')
+                    [200, {"Content-Type" => "application/json"}, [JSON.generate({status: 'success'})]]
+                else
+                    [200, {"Content-Type" => "application/json"}, [JSON.generate({status: 'error'})]]
+                end
+            else
+                [200, {'Content-Type' => 'text/html'}, [html_for({action: 'new', param: ''})]]
+            end
+
         when /update/
             return login! if insecure?
 
