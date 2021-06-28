@@ -8,9 +8,10 @@ body {
     background-color: rgb(245, 245, 245);
     height: calc(100vh - 45px);
     display: flex;
-    flex-direction: column;
     justify-content: center;
+    align-content: center;
     margin: 20px;
+    height: 100%;
 }
 
 

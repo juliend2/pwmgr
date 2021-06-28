@@ -83,19 +83,26 @@ function replaceMarkdownParts(markdown) {
 
 function markdownParser(text) {
     var parts = []
-    text.split(/\<pw\>/).forEach(split => {
+    // console.log('pw', text.split(/\<pw\>/gm))
+    text.split(/\<pw\>/gm).forEach(split => {
+        
         const pwSplits = split.split(/\<\/pw\>/)
+        // console.log('each', split, pwSplits)
         if (pwSplits.length > 1) {
+            // console.log('if')
             parts.push('<pw>')
             parts.push(pwSplits[0])
             parts.push('</pw>')
             parts.push(replaceMarkdownParts( pwSplits[1] ))
 
         } else {
+            // console.log('else')
             parts.push(replaceMarkdownParts( split ))
         }
     })
-    const toHTML = parts.join('').replace(/\<pw\>(.*)\<\/pw\>/gim, `<input type="text" class="copyable" value="$1">`)
+    
+    var toHTML = parts.join('').replace(/\<pw\>(.+?)\<\/pw\>/g, `<input type="text" class="copyable" value="$1">`)
+    // console.log('parts', toHTML)
 
 	return toHTML.trim(); // using trim method to remove whitespace
 }
