@@ -77,7 +77,8 @@ function replaceMarkdownParts(markdown) {
         .replace(/^# (.*$)/gim, '<h1>$1</h1>') // h1 tag
         .replace(/\*\*(.*)\*\*/gim, '<b>$1</b>') // bold text
         .replace(/\*(.*)\*/gim, '<i>$1</i>') // italic text
-        .replace(/\n\n/gm, '<br>'); // newline
+        .replace(/\n\n\n/gm, '<br><br>') // newline
+        .replace(/\n+/gm, '<br>'); // newline
 } 
 
 function markdownParser(text) {
@@ -94,7 +95,7 @@ function markdownParser(text) {
             parts.push(replaceMarkdownParts( split ))
         }
     })
-    const toHTML = parts.join('').replace(/\<pw\>(.*)\<\/pw\>/gim, `<input type="text" value="$1">`)
+    const toHTML = parts.join('').replace(/\<pw\>(.*)\<\/pw\>/gim, `<input type="text" class="copyable" value="$1">`)
 
 	return toHTML.trim(); // using trim method to remove whitespace
 }
@@ -171,12 +172,27 @@ function onSubmitLogin(formElement) {
     return false
 }
 
+
+function initPasswordButtons() {
+    var i = 0
+    document.querySelectorAll('input[type="text"]').forEach(field => {
+        field.id = `id-${i}`
+        const btn = `<button class="btn" data-clipboard-target="#id-${i}">
+            <img src="/clippy.svg" alt="Copy to clipboard" />
+        </button>`
+        field.insertAdjacentHTML('afterend', btn)
+        i += 1
+    })
+}
+
 function showFile(fileName) {
     history.pushState({action: 'show', param: fileName}, `'${fileName}' passwords | PWMGR`, `/show/${fileName}`)
     getFileContent(fileName)
         .then((data) => {
             const decrypted = decrypt(data, window.secretPassphrase);
             changeContentFor(renderShowFile(fileName, decrypted))
+            initPasswordButtons()
+            new ClipboardJS('.btn');
         })
 }
 

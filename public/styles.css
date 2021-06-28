@@ -74,3 +74,11 @@ form.edit-file textarea {
     width: 100%;
     min-height: 300px;
 }
+
+.copyable + button {
+    width: 2.3rem;
+}
+
+.copyable + button > img {
+    height: 0.8rem;
+}

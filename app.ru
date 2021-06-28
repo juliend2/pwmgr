@@ -27,6 +27,7 @@ module Html
                 </head>
                 <body>
 
+                    <script src="/lib/clipboard.min.js"></script>
                     <script src="/lib/crypto.aes.js"></script>
                     <script src="/main.js"></script>
 
