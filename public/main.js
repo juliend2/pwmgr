@@ -33,7 +33,7 @@ function renderShowFile(fileName, fileContent) {
 function renderLoginForm() {
     return `
         <form class="login" method="post" action="." onsubmit="return onSubmitLogin(this)">
-            <h1>What's the secret code, <nobr>Mr. Bond</nobr>?</h1>
+            <h1>What's the code, <nobr>Mr. Bond</nobr>?</h1>
             <p>
                 <input type="password" data-lpignore="true" name="master_password" placeholder="">
             </p>
