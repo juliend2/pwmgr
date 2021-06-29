@@ -13,7 +13,21 @@ body {
     margin: 20px;
     height: 100%;
 }
+@media (max-width: 768px) {
+    body {
+        margin: 0;
+        min-height: 100vh;
+    }
+}
 
+.markdown-display h1, 
+.markdown-display h2, 
+.markdown-display h3, 
+.markdown-display h4,
+.markdown-display h5,
+.markdown-display h6 {
+    margin-bottom: 0;
+}
 
 .border-top {
     border-top: 1px solid var(--lightGray);
@@ -31,6 +45,11 @@ body {
     border-radius: var(--radius);
     box-shadow: 0px 0px 22px -6px rgba(0,0,0,0.31);
     box-sizing: border-box;
+}
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+    }
 }
 
 /* Login page: */

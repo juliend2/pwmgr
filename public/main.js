@@ -20,7 +20,7 @@ function renderShowFile(fileName, fileContent) {
     return `
     <div class="show-file" data-filename="${fileName}">
         <h1 class="note-title">${fileName}</h1>
-        <div class="border-top padding-top">
+        <div class="markdown-display  border-top padding-top">
             ${markdownParser(fileContent)}
         </div>
         <p>
