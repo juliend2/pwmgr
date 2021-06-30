@@ -52,6 +52,24 @@ body {
     }
 }
 
+.files-list {
+    padding-left: 0;
+}
+.files-list li {
+    list-style: none;
+}
+.files-list li a {
+    display: block;
+    line-height: 1.4rem;
+    padding: 2px 0;
+}
+.files-list li a:hover {
+    background-color: rgba(116, 116, 116, 0.31);
+    outline: 4px solid rgba(116, 116, 116, 0.31);
+    color: black;
+    text-decoration: none;
+}
+
 /* Login page: */
 /* form.login {
     background-color: white;
@@ -90,15 +108,37 @@ input[type='submit'] {
     }
 }
 
+
 form.edit-file textarea {
     width: 100%;
     min-height: 300px;
 }
 
+.copyable {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-width: 1px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.copyable:focus {
+    border-width: 1px;
+    box-shadow: 0px 0px 7px -2px rgb(37 186 255);
+    outline: none;
+}
 .copyable + button {
     width: 2.3rem;
+    border-radius: 3px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-width: 1px;
+    padding-top: 1px;
+    padding-bottom: 2px;
 }
-
+.copyable + button:hover {
+    background-image: linear-gradient(rgb(231, 231, 231), rgb(199, 199, 199));
+    cursor: pointer;
+}
 .copyable + button > img {
     height: 0.8rem;
 }

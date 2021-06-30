@@ -35,7 +35,7 @@ function renderLoginForm() {
         <form class="login" method="post" action="." onsubmit="return onSubmitLogin(this)">
             <h1>What's the code, <nobr>Mr. Bond</nobr>?</h1>
             <p>
-                <input type="password" data-lpignore="true" name="master_password" placeholder="">
+                <input type="password" autofocus data-lpignore="true" name="master_password" placeholder="">
             </p>
             <p>
                 <input type="submit" value="Enter">
@@ -55,7 +55,7 @@ function renderList(files) {
     return `
         <div class="list-of-files">
             <button onclick="return showNew()">New note</button>
-            <ul>
+            <ul class="files-list">
                 ${files.map(f => fileItem(f)).join('')}
             </ul>
         </div>
@@ -101,7 +101,7 @@ function markdownParser(text) {
         }
     })
     
-    var toHTML = parts.join('').replace(/\<pw\>(.+?)\<\/pw\>/g, `<input type="text" class="copyable" value="$1">`)
+    var toHTML = parts.join('').replace(/\<pw\>(.+?)\<\/pw\>/g, `<input type="text" class="copyable" data-value="$1">`)
     // console.log('parts', toHTML)
 
 	return toHTML.trim(); // using trim method to remove whitespace
@@ -184,6 +184,7 @@ function initPasswordButtons() {
     var i = 0
     document.querySelectorAll('input[type="text"]').forEach(field => {
         field.id = `id-${i}`
+        field.value = ("●".repeat( field.dataset.value.length ))
         const btn = `<button class="btn" data-clipboard-target="#id-${i}">
             <img src="/clippy.svg" alt="Copy to clipboard" />
         </button>`
@@ -199,7 +200,11 @@ function showFile(fileName) {
             const decrypted = decrypt(data, window.secretPassphrase);
             changeContentFor(renderShowFile(fileName, decrypted))
             initPasswordButtons()
-            new ClipboardJS('.btn');
+            new ClipboardJS('.btn', {
+                text: (trigger) => {
+                    return trigger.previousElementSibling.dataset.value;
+                }
+            });
         })
 }
 
