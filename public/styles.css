@@ -139,6 +139,10 @@ form.edit-file textarea {
     background-image: linear-gradient(rgb(231, 231, 231), rgb(199, 199, 199));
     cursor: pointer;
 }
+.copyable + button:active {
+    background-image: linear-gradient(rgb(199, 199, 199), rgb(231, 231, 231));
+    cursor: pointer;
+}
 .copyable + button > img {
     height: 0.8rem;
 }
