@@ -77,6 +77,7 @@ function replaceMarkdownParts(markdown) {
         .replace(/^# (.*$)/gim, '<h1>$1</h1>') // h1 tag
         .replace(/\*\*(.*)\*\*/gim, '<b>$1</b>') // bold text
         .replace(/\*(.*)\*/gim, '<i>$1</i>') // italic text
+        .replace(/```(.*?)```/gms, '<pre><code>$1</code></pre>') // newline
         .replace(/\n\n\n/gm, '<br><br>') // newline
         .replace(/\n+/gm, '<br>'); // newline
 } 
