@@ -34,6 +34,14 @@ bundle exec rackup --host=0.0.0.0 --port=9393 app.ru
 2. Take the content of Caddyfile and append it to your main /etc/caddy/Caddyfile
 3. sudo systemctl reload caddy
 
+
+
+## Cron job
+
+```cron
+0 5,17 * * * cd <pwmgr>/data/ && git add . && git commit -m "data update (from aws server)" && git push
+```
+
 ## License
 
 MIT.
