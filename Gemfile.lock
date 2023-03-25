@@ -4,6 +4,9 @@ GEM
     daemons (1.4.1)
     eventmachine (1.2.7)
     highline (2.0.3)
+    nio4r (2.5.8)
+    puma (6.1.1)
+      nio4r (~> 2.0)
     rack (2.2.3)
     thin (1.8.1)
       daemons (~> 1.0, >= 1.0.9)
@@ -16,6 +19,7 @@ PLATFORMS
 
 DEPENDENCIES
   highline (~> 2.0.3)
+  puma
   rack (~> 2.2.3)
   thin
 
