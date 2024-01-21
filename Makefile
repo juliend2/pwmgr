@@ -1,7 +1,2 @@
-
-
 run:
-	php -S 0.0.0.0:8000 -t .
-
-open:
-	explorer.exe .
+	bundle exec rackup --host=0.0.0.0 --port=9393 app.ru
